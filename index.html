@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <title>Melotone – Email & Chat Assistant</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#f9e3d7" />
+
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Melotone" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="app-root">
+    <!-- TOP BAR -->
+    <header class="app-header">
+      <div class="logo-badge">
+        <div class="logo-inner">MN</div>
+      </div>
+      <div class="header-text">
+        <h1 id="appTitle">Melotone</h1>
+        <p id="appSubtitle">Email & chat assistant for immigrants and expats.</p>
+      </div>
+      <div class="header-right">
+        <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">
+          🌙
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+      <!-- VIEW: COMPOSE -->
+      <section class="view view--active" id="view-compose">
+        <div class="pill-section-label" id="draftLabel">Draft</div>
+
+        <!-- INPUT CARD -->
+        <div class="card card--input">
+          <label class="field-label" for="inputText" id="yourMessageLabel">Your message</label>
+          <textarea
+            id="inputText"
+            placeholder="Write or paste your email or message here. You can be informal or messy — Melotone will tidy it."
+          ></textarea>
+
+          <div class="field-row field-row--stack-mobile">
+            <div class="field-group">
+              <span class="field-label" id="toneLabel">Tone</span>
+              <div class="chip-row" id="toneChips">
+                <button class="chip chip--active" data-tone="warm, friendly">Warm</button>
+                <button class="chip" data-tone="professional, concise">Professional</button>
+                <button class="chip" data-tone="formal, polite">Formal</button>
+                <button class="chip" data-tone="direct, clear">Direct</button>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <span class="field-label" id="langLabel">Language</span>
+              <select id="languageSelect">
+                <option value="en" selected>English</option>
+                <option value="pt-PT">Português (PT)</option>
+                <option value="es">Español</option>
+                <option value="pl">Polski</option>
+                <option value="ro">Română</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Situation selector -->
+          <div class="field-row">
+            <div class="field-group">
+              <span class="field-label" id="situationLabel">Who are you writing to?</span>
+              <select id="situationSelect">
+                <option value="general" selected>General / personal</option>
+                <option value="school">School / teacher</option>
+                <option value="healthcare">GP / NHS / hospital</option>
+                <option value="landlord">Landlord / estate agent</option>
+                <option value="employer">Employer / HR / job</option>
+                <option value="immigration">Immigration / council / Home Office</option>
+                <option value="benefits">Benefits / Jobcentre / social services</option>
+                <option value="other">Other / not sure</option>
+              </select>
+              <p class="help-text" id="situationHelp">
+                This helps Melotone choose the right style for your situation.
+              </p>
+            </div>
+          </div>
+
+          <!-- MAIN ACTION BUTTONS -->
+          <div class="button-row">
+            <button id="fixBtn" class="btn btn--primary">Fix my message ✨</button>
+            <button id="rewriteBtn" class="btn">Rewrite ✉️</button>
+            <button id="translateBtn" class="btn">Translate 🌍</button>
+            <button id="shortMsgBtn" class="btn">Short message 💬</button>
+            <button id="photoTranslateBtn" class="btn btn--outline">Photo → Translate 📷</button>
+          </div>
+
+          <!-- Hidden file input for photo translate -->
+          <input
+            type="file"
+            id="photoInput"
+            accept="image/*"
+            capture="environment"
+            style="display: none"
+          />
+
+          <p id="statusText" class="status-text"></p>
+        </div>
+
+        <!-- OUTPUT CARD -->
+        <div class="card card--output">
+          <!-- Mode toggle: Email / Chat -->
+          <div class="mode-toggle">
+            <span class="mode-toggle-label" id="modeLabel">Mode</span>
+            <div class="toggle-switch mode-email" id="modeToggle">
+              <span
+                class="toggle-option toggle-option--active"
+                data-mode="email"
+                id="modeEmailLabel"
+              >
+                Email
+              </span>
+              <span class="toggle-option" data-mode="chat" id="modeChatLabel">
+                Chat
+              </span>
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <!-- EMAIL TAB CONTENT -->
+          <div id="emailOutputSection">
+            <div class="field-group">
+              <span class="field-label" id="emailToLabel">Email to</span>
+              <input
+                id="emailTo"
+                type="email"
+                class="text-input"
+                placeholder="e.g. teacher@school.org"
+              />
+            </div>
+
+            <div class="field-group">
+              <span class="field-label" id="subjectLabel">Subject</span>
+              <div id="subjectText" class="subject-box">
+                Subject will appear here.
+              </div>
+            </div>
+
+            <div class="field-group">
+              <span class="field-label" id="polishedEmailLabel">Polished email</span>
+              <div id="outputText" class="output-box" contenteditable="true">
+                Your polished email will appear here.
+              </div>
+              <div class="btn-row-inline">
+                <button id="copyEmailBtn" class="btn btn--ghost">
+                  Copy email 📑
+                </button>
+                <button id="sendEmailBtn" class="btn btn--accent">
+                  Send email 📤
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CHAT TAB CONTENT -->
+          <div id="chatOutputSection">
+            <div class="field-group">
+              <div class="field-label-row">
+                <span class="field-label" id="shortMsgLabel">Short chat message</span>
+                <select id="channelSelect">
+                  <option value="WhatsApp">WhatsApp</option>
+                  <option value="SMS">SMS</option>
+                  <option value="Telegram">Telegram</option>
+                </select>
+              </div>
+
+              <span class="field-label" id="messageToLabel">Send message to</span>
+              <input
+                id="messageTo"
+                type="text"
+                class="text-input"
+                placeholder="e.g. +4477… or contact name"
+              />
+
+              <div id="shortMsgText" class="output-box output-box--small">
+                Your short message will appear here.
+              </div>
+              <div class="btn-row-inline">
+                <button id="copyShortBtn" class="btn btn--ghost">
+                  Copy message 📑
+                </button>
+                <button id="sendMsgBtn" class="btn btn--accent">
+                  Send message 📲
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="app-footer" id="footerText">
+          Melotone helps you rewrite and translate messages for schools, NHS, landlords,
+          employers and immigration. It doesn’t replace professional medical, legal or
+          immigration advice. Always check the text before you send it.
+        </p>
+      </section>
+
+      <!-- VIEW: HISTORY -->
+      <section class="view" id="view-history" aria-hidden="true">
+        <div class="card">
+          <h2>History</h2>
+          <p>In a later version, we can save recent messages here.</p>
+        </div>
+      </section>
+
+      <!-- VIEW: SETTINGS -->
+      <section class="view" id="view-settings" aria-hidden="true">
+        <div class="card">
+          <h2>Settings</h2>
+          <p>Here you’ll be able to configure languages, default tone, etc.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAV (mobile) -->
+    <nav class="bottom-nav">
+      <button class="bottom-nav-btn bottom-nav-btn--active" data-target="view-compose">
+        <span>✍️</span>
+        <span id="navCompose">Compose</span>
+      </button>
+      <button class="bottom-nav-btn" data-target="view-history">
+        <span>🕒</span>
+        <span id="navHistory">History</span>
+      </button>
+      <button class="bottom-nav-btn" data-target="view-settings">
+        <span>⚙️</span>
+        <span id="navSettings">Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- UI LANGUAGE OVERLAY -->
+  <div id="languageOverlay" class="lang-overlay">
+    <div class="lang-modal">
+      <h2>Choose your app language</h2>
+      <p>You can still write messages in any language later.</p>
+      <div class="lang-grid">
+        <button class="lang-btn" data-lang="en">
+          <span class="lang-flag">
+            <svg viewBox="0 0 24 16" aria-hidden="true">
+              <rect width="24" height="16" fill="#FFFFFF"></rect>
+              <rect y="6" width="24" height="4" fill="#CF142B"></rect>
+              <rect x="10" width="4" height="16" fill="#CF142B"></rect>
+            </svg>
+          </span>
+          <span>English</span>
+        </button>
+
+        <button class="lang-btn" data-lang="pt">
+          <span class="lang-flag">
+            <svg viewBox="0 0 24 16" aria-hidden="true">
+              <rect width="24" height="16" fill="#ff0000"></rect>
+              <rect width="10" height="16" fill="#006600"></rect>
+              <circle cx="10" cy="8" r="3" fill="#ffcc00"></circle>
+            </svg>
+          </span>
+          <span>Português</span>
+        </button>
+
+        <button class="lang-btn" data-lang="es">
+          <span class="lang-flag">
+            <svg viewBox="0 0 24 16" aria-hidden="true">
+              <rect width="24" height="16" fill="#AA151B"></rect>
+              <rect y="4" width="24" height="8" fill="#F1BF00"></rect>
+            </svg>
+          </span>
+          <span>Español</span>
+        </button>
+
+        <button class="lang-btn" data-lang="pl">
+          <span class="lang-flag">
+            <svg viewBox="0 0 24 16" aria-hidden="true">
+              <rect width="24" height="8" fill="#FFFFFF"></rect>
+              <rect y="8" width="24" height="8" fill="#DC143C"></rect>
+            </svg>
+          </span>
+          <span>Polski</span>
+        </button>
+
+        <button class="lang-btn" data-lang="ro">
+          <span class="lang-flag">
+            <svg viewBox="0 0 24 16" aria-hidden="true">
+              <rect width="8" height="16" fill="#002B7F"></rect>
+              <rect x="8" width="8" height="16" fill="#FCD116"></rect>
+              <rect x="16" width="8" height="16" fill="#CE1126"></rect>
+            </svg>
+          </span>
+          <span>Română</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
