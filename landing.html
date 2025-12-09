@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Melotone – Fix My Message</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg-from: #fff7f2;
+      --bg-to: #f9e3d7;
+      --card-bg: #ffffff;
+      --accent: #f29a7b;
+      --accent-strong: #e67855;
+      --accent-soft: rgba(242, 154, 123, 0.14);
+      --text-main: #231f20;
+      --text-muted: #6b7280;
+      --border-soft: rgba(148, 163, 184, 0.45);
+      --shadow-soft: 0 18px 40px rgba(148, 163, 184, 0.35);
+      --purple: #6c63ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, var(--bg-from), var(--bg-to));
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top bar */
+
+    .nav {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 20% 20%, #fff3eb 0, #f5b7a6 40%, #f29a7b 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px rgba(242, 154, 123, 0.5);
+      flex-shrink: 0;
+    }
+
+    .logo-inner {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(60, 35, 25, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff9f6;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .nav-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-pill {
+      font-size: 0.78rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
+    }
+
+    /* Main card */
+
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem 1.1rem 2rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 1040px;
+      background: var(--card-bg);
+      border-radius: 22px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-soft);
+      padding: 1.7rem 1.8rem 1.7rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 1.4rem;
+    }
+
+    @media (max-width: 820px) {
+      .card {
+        grid-template-columns: 1fr;
+        padding: 1.4rem 1.2rem 1.5rem;
+      }
+    }
+
+    /* Left side – copy */
+
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .hero-title {
+      font-size: 1.7rem;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .hero-highlight {
+      background: linear-gradient(120deg, #f29a7b, #f97316);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
+      margin: 0.6rem 0 1rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 480px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.78rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(248, 250, 252, 0.9);
+    }
+
+    .pricing-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.6rem;
+      align-items: center;
+    }
+
+    .btn-primary {
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: linear-gradient(135deg, #f9c2ad, #f29a7b);
+      color: #3a2620;
+      box-shadow: 0 10px 22px rgba(242, 154, 123, 0.55);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(242, 154, 123, 0.65);
+    }
+
+    .btn-secondary {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(248, 250, 252, 0.9);
+      padding: 0.48rem 0.9rem;
+      font-size: 0.82rem;
+      display: inline-flex;
+      gap: 0.3rem;
+      align-items: center;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .btn-secondary span {
+      font-size: 0.95rem;
+    }
+
+    .trust-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .trust-shield {
+      font-size: 0.9rem;
+    }
+
+    /* Variant tabs */
+
+    .variant-tabs {
+      display: inline-flex;
+      padding: 0.15rem;
+      border-radius: 999px;
+      background: #f9fafb;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      margin-bottom: 0.7rem;
+      gap: 0.1rem;
+    }
+
+    .variant-tab {
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem;
+      border: none;
+      background: transparent;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .variant-tab span {
+      font-size: 0.95rem;
+    }
+
+    .variant-tab--active {
+      background: #f8ebe5;
+      color: #3a2620;
+      font-weight: 600;
+      box-shadow: 0 3px 8px rgba(148, 163, 184, 0.35);
+    }
+
+    /* Right side – mock UI */
+
+    .mock {
+      background: radial-gradient(circle at top left, #fff7f2, #f5e4db);
+      border-radius: 18px;
+      padding: 0.9rem;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .mock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .mock-tag {
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .mock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.15rem;
+      font-size: 0.76rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.06);
+      border: 1px solid rgba(129, 140, 248, 0.4);
+      color: #4b5563;
+    }
+
+    .mock-body {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 14px;
+      padding: 0.7rem 0.7rem 0.8rem;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      font-size: 0.82rem;
+    }
+
+    .mock-label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #4b5563;
+    }
+
+    .mock-input,
+    .mock-textarea {
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 0.4rem 0.6rem;
+      font-size: 0.8rem;
+      background: #f9fafb;
+      color: #111827;
+    }
+
+    .mock-textarea {
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
+
+    .mock-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .mock-chip {
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: rgba(248, 250, 252, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+    }
+
+    .mock-footer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* FAQ */
+
+    .faq {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 1.1rem 2.3rem;
+    }
+
+    .faq-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.8rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .faq-item strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: #374151;
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        padding-inline: 0.9rem;
+      }
+      .hero-title {
+        font-size: 1.5rem;
+      }
+      .card {
+        margin-top: 0.4rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- Top nav -->
+    <header class="nav">
+      <div class="nav-left">
+        <div class="logo-badge">
+          <div class="logo-inner">MN</div>
+        </div>
+        <div>
+          <div class="nav-title">Melotone</div>
+          <div class="nav-sub">Fix my message for life in the UK</div>
+        </div>
+      </div>
+      <div class="nav-right">
+        <div class="nav-pill">
+          <div class="nav-dot"></div>
+          <span>Early access</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main card -->
+    <main class="main">
+      <section class="card">
+
+        <!-- LEFT: Text + variants -->
+        <div>
+          <div class="variant-tabs">
+            <button class="variant-tab variant-tab--active" data-variant="school">
+              <span>🏫</span> <span>School emails</span>
+            </button>
+            <button class="variant-tab" data-variant="nhs">
+              <span>🏥</span> <span>NHS & GP</span>
+            </button>
+            <button class="variant-tab" data-variant="general">
+              <span>🌍</span> <span>UK life</span>
+            </button>
+          </div>
+
+          <p class="hero-eyebrow" id="eyebrowText">
+            For Portuguese & other immigrants in the UK
+          </p>
+
+          <h1 class="hero-title">
+            Fix your <span class="hero-highlight" id="heroHighlight">school</span> messages
+            in clear UK English.
+          </h1>
+
+          <p class="hero-sub" id="heroSub">
+            Melotone helps you write polite, confident emails and WhatsApp messages to your
+            child’s school — even if you think in Portuguese and write in English.
+          </p>
+
+          <div class="hero-badges" id="heroBadges">
+            <span class="badge">📝 Fix my message → good UK English</span>
+            <span class="badge">✉️ Email + 💬 WhatsApp reply</span>
+            <span class="badge">🇵🇹 🇷🇴 🇪🇸 🇵🇱 → 🇬🇧</span>
+          </div>
+
+          <div class="cta-row">
+            <a href="http://localhost:3000" class="btn-primary">
+              <span>Open the app</span> <span>↗</span>
+            </a>
+            <button type="button" class="btn-secondary" id="demoScrollBtn">
+              <span>▶</span>
+              <span>See how it works</span>
+            </button>
+          </div>
+
+          <div class="pricing-note">
+            Free while in beta. Later: simple, low-cost plan for families and workers.
+          </div>
+
+          <div class="trust-text">
+            <span class="trust-shield">🛡️</span>
+            <span>We never sell your messages. Always check text before sending.</span>
+          </div>
+        </div>
+
+        <!-- RIGHT: Mock UI -->
+        <aside class="mock" id="demoSection">
+          <div class="mock-header">
+            <span>Melotone · Fix my message</span>
+            <span class="mock-badge">
+              <span>✨</span><span>Real-time rewrite</span>
+            </span>
+          </div>
+
+          <div class="mock-body">
+            <div>
+              <div class="mock-label">Your original message</div>
+              <div class="mock-textarea" id="mockInput">
+olá, a minha filha nao vai na escola amanha porque esta doente, desculpa avisar em cima da hora
+              </div>
+            </div>
+
+            <div>
+              <div class="mock-label">Melotone fixed version (email)</div>
+              <div class="mock-textarea" id="mockEmail">
+Dear Miss Smith,
+
+I hope you are well. I just wanted to let you know that my daughter will not be able to come to school tomorrow because she is unwell. I am sorry for the short notice.
+
+Thank you for your understanding.
+
+Kind regards,
+Ana Rocha
+              </div>
+            </div>
+
+            <div>
+              <div class="mock-label">Short WhatsApp reply</div>
+              <div class="mock-input" id="mockShort">
+Hi Miss, my daughter is sick so she can't come tomorrow. Sorry for the late message.
+              </div>
+            </div>
+
+            <div class="mock-actions">
+              <span class="mock-chip">Change tone: more formal</span>
+              <span class="mock-chip">Translate to Portuguese</span>
+            </div>
+          </div>
+
+          <div class="mock-footer" id="mockFooter">
+            Example for school emails. Melotone can also help with GP, landlord, work and council messages.
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <!-- FAQ / reassurance -->
+    <section class="faq">
+      <h2 class="faq-title">Questions you might have</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <strong>Do I need perfect English?</strong>
+          <p>No. You can write in simple English, Portuguese or a mix. Melotone makes it clear and polite.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Is this only for schools?</strong>
+          <p>No. We also help with NHS/GP messages, landlords, employers, HR and immigration emails.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Will you store or share my messages?</strong>
+          <p>We don’t sell your data. We aim to handle your text as safely as possible. Still, always double-check important messages.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Is there a free option?</strong>
+          <p>Yes. During beta, Melotone is free. Later we’ll offer a low-cost plan for regular use.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Variant content data
+    const variants = {
+      school: {
+        eyebrow: "For parents at schools in the UK",
+        highlight: "school",
+        sub: "Melotone helps you write polite, confident emails and WhatsApp messages to your child’s school — even if you think in Portuguese and write in English.",
+        badges: [
+          "📝 Fix my message → school-safe English",
+          "✉️ Email + 💬 WhatsApp reply",
+          "Explaining absence, behaviour, meetings"
+        ],
+        mockInput:
+"olá, a minha filha nao vai na escola amanha porque esta doente, desculpa avisar em cima da hora",
+        mockEmail:
+"Dear Miss Smith,\n\nI hope you are well. I just wanted to let you know that my daughter will not be able to come to school tomorrow because she is unwell. I am sorry for the short notice.\n\nThank you for your understanding.\n\nKind regards,\nAna Rocha",
+        mockShort:
+"Hi Miss, my daughter is sick so she can't come tomorrow. Sorry for the late message.",
+        mockFooter: "Example for school emails. Melotone can also help with GP, landlord, work and council messages."
+      },
+      nhs: {
+        eyebrow: "For NHS & GP communication",
+        highlight: "NHS & GP",
+        sub: "Explain symptoms, request appointments and reply to letters in clear, respectful English. Melotone helps you sound calm and polite, not rude or aggressive.",
+        badges: [
+          "🏥 GP, hospital & clinic messages",
+          "📝 Explain symptoms clearly",
+          "🇵🇹 🇷🇴 🇪🇸 🇵🇱 → polite medical English"
+        ],
+        mockInput:
+"hello, i need talk with doctor because my chest hurt many days, but i dont know if is urgente or normal. can i get appointment please?",
+        mockEmail:
+"Dear Practice Team,\n\nI hope you are well. I would like to request an appointment with a doctor. I have been having chest discomfort for several days and I am not sure if it is something urgent.\n\nCould you please let me know if I should be seen soon, or if there is any advice you can offer in the meantime?\n\nThank you very much for your help.\n\nKind regards,\nAna Rocha",
+        mockShort:
+"Hello, I’ve had chest discomfort for a few days and I’m not sure if it’s urgent. Could I please get an appointment?",
+        mockFooter: "Example for NHS/GP. Melotone is not a doctor and does not give medical advice – it only helps with wording."
+      },
+      general: {
+        eyebrow: "For life, work and housing in the UK",
+        highlight: "everyday UK",
+        sub: "From landlords to HR, from school to council — Melotone turns your ideas into clear, respectful UK-style messages.",
+        badges: [
+          "🏠 Landlord / repairs / deposits",
+          "💼 Work, HR, job applications",
+          "🏛️ Council & immigration emails"
+        ],
+        mockInput:
+"hi, the heating in my flat no working again and is very cold, i already speak before but nothing change, can you please fix fast?",
+        mockEmail:
+"Dear [Landlord / Lettings Team],\n\nI hope you are well. I am writing because the heating in my flat is not working again and the property is very cold.\n\nI mentioned this issue previously but it has not been fully resolved. Could you please arrange for someone to come and fix it as soon as possible?\n\nThank you in advance for your help.\n\nKind regards,\nAna Rocha",
+        mockShort:
+"Hi, the heating isn’t working again and it’s very cold. Could you please arrange someone to fix it as soon as possible?",
+        mockFooter: "Example for landlord messages. Melotone can also help with employers, HR and council communication."
+      }
+    };
+
+    const tabButtons = document.querySelectorAll(".variant-tab");
+    const eyebrowText = document.getElementById("eyebrowText");
+    const heroHighlight = document.getElementById("heroHighlight");
+    const heroSub = document.getElementById("heroSub");
+    const heroBadges = document.getElementById("heroBadges");
+    const mockInput = document.getElementById("mockInput");
+    const mockEmail = document.getElementById("mockEmail");
+    const mockShort = document.getElementById("mockShort");
+    const mockFooter = document.getElementById("mockFooter");
+    const demoScrollBtn = document.getElementById("demoScrollBtn");
+    const demoSection = document.getElementById("demoSection");
+
+    function setVariant(key) {
+      const v = variants[key];
+      if (!v) return;
+
+      // Tabs
+      tabButtons.forEach((btn) => {
+        const isActive = btn.dataset.variant === key;
+        btn.classList.toggle("variant-tab--active", isActive);
+      });
+
+      // Texts
+      eyebrowText.textContent = v.eyebrow;
+      heroHighlight.textContent = v.highlight;
+      heroSub.textContent = v.sub;
+
+      // Badges
+      heroBadges.innerHTML = "";
+      v.badges.forEach((b) => {
+        const span = document.createElement("span");
+        span.className = "badge";
+        span.textContent = b;
+        heroBadges.appendChild(span);
+      });
+
+      // Mock content
+      mockInput.textContent = v.mockInput;
+      mockEmail.textContent = v.mockEmail;
+      mockShort.textContent = v.mockShort;
+      mockFooter.textContent = v.mockFooter;
+    }
+
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.variant;
+        setVariant(key);
+      });
+    });
+
+    if (demoScrollBtn && demoSection) {
+      demoScrollBtn.addEventListener("click", () => {
+        demoSection.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+
+    // Default variant
+    setVariant("school");
+  </script>
+</body>
+</html>
